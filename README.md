@@ -1,6 +1,6 @@
 # Front-end developer basics
 
-The [basics](front-end-dev-basics.md) what every front-end developer should know.
+The [basics](front-end-dev-basics.md) that every front-end developer should know.
 
 ## Author
 
