@@ -14,7 +14,7 @@ HTML doctypes:
 - `<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3.0//EN//">`
 - `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">`
 - `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">`
-- `<!DOCTYPE html>` --> html5
+- `<!DOCTYPE html>`
 
 XHTML doctype:
 
@@ -331,7 +331,7 @@ The same-origin policy restricts how a document or script loaded from one origin
 
 A flash of unstyled content (FOUC) is an instance where a web page appears briefly with the browser's default styles prior to loading an external CSS stylesheet, due to the web browser engine rendering the page before all information is retrieved. The page corrects itself as soon as the style rules are loaded and applied; however, the shift is quite visible and distracting.
 
-To avoid FOUC try to place js self-executed function in a head of a document. See IE HTML5 shiv for example: `<!--[if IE]><script src="//c.mfcreative.com/js/html5shiv.js"></script><![endif]-->`
+To avoid FOUC try to place js self-executed function in a head of a document. See IE HTML5 shiv for example: `<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->`
 
 
 ----------
