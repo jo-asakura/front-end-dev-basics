@@ -1,4 +1,5 @@
-# Front-end developer basics (rev. May 2014)
+# Front-end developer basics
+[revision May 2014]
 
 
 ##HTML
