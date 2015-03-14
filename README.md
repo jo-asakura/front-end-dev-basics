@@ -1,5 +1,5 @@
 # Front-end developer basics
-[revision May 2014]
+[revision June 2014]
 
 
 ##HTML
@@ -123,34 +123,34 @@ According to the W3C best practices document, the best way to define the languag
 
 ###2. DOM manipulation
 - How to create and add nodes:
-```
-    document.createElement('tag')
-    document.createTextNode('text') // creates <p>
-    document.getElementById('parent-id').appendChild(node)
-    document.getElementById('parent-id').insertBefore(pivotNode, node)
+```html
+document.createElement('tag')
+document.createTextNode('text') // creates <p>
+document.getElementById('parent-id').appendChild(node)
+document.getElementById('parent-id').insertBefore(pivotNode, node)
 ```
 - Find nodes:
-```
-    document.getElementById('id')
-    document.getElementsByClassName('class')[idx]
-    document.getElementsByTagName('tag')[idx]
+```html
+document.getElementById('id')
+document.getElementsByClassName('class')[idx]
+document.getElementsByTagName('tag')[idx]
 ```
 - Remove nodes:
-```
-    var parent = document.getElementById('parent-id');
-    var nodeToRemove = document.getElementById('remove-id');
-    parent.removeChild(nodeToRemove);
+```html
+var parent = document.getElementById('parent-id');
+var nodeToRemove = document.getElementById('remove-id');
+parent.removeChild(nodeToRemove);
 ```
 - Copy nodes:
-```
-    var clone = document.getElementById('id').cloneNode(true) // true means deep copy
+```html
+var clone = document.getElementById('id').cloneNode(true) // true means deep copy
 ```
 - Replace nodes:
-```
-    var parent = document.getElementById('parent-id');
-    var nodeToReplace = document.getElementById('replacing-id');
-    var newNode = document.createTextNode('I\'m a new node.');
-    parent.replaceChild(nodeToReplace, newNode);
+```html
+var parent = document.getElementById('parent-id');
+var nodeToReplace = document.getElementById('replacing-id');
+var newNode = document.createTextNode('I\'m a new node.');
+parent.replaceChild(nodeToReplace, newNode);
 ```
 
 
@@ -160,12 +160,12 @@ Events are things that happen to DOM elements in your page, such as mouse clicks
 *Only Internet Explorer versions lower than 9 uses the global window.event object instead of an argument.*
 
 The classy way to set a handler is to use `addEventListener()` on the target. You then can remove them with `removeEventListener()`. If `useCapture` is true then handler will be executed at the capturing phase.
-```
-document.getElementById('id').addEventListener('click', handlerFunction, useCapture)
-document.getElementById('id').removeEventListener('click', handlerFunction, useCapture)
+```html
+document.getElementById('id').addEventListener('click', handlerFunction, useCapture);
+document.getElementById('id').removeEventListener('click', handlerFunction, useCapture);
 ```
 Unfortunately, Internet Explorer works differently from other browsers. There is no `addEventListener()` function and there is an `attachEvent()` function instead:
-```
+```html
 document.getElementById('id').attachEvent('onclick', handlerFunction);
 ```
 
@@ -186,13 +186,13 @@ XMLHttpRequest is a JavaScript object that was designed by Microsoft. It provide
 
 To create an instance of XMLHttpRequest, simply do this:
 
-```
+```html
 var myRequest = new XMLHttpRequest();
 ```
 
 The simplest GET request is:
 
-```
+```html
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function () {
     if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
@@ -234,7 +234,8 @@ JSON's basic types are:
 ###6. Difference between .call and .apply
 
 The main difference is that `apply` lets you invoke the function with arguments as an array; `call` requires the parameters be listed explicitly.
-```
+
+```javascript
 function abc(a, b, c) { ... } // define a function
 
 abc.apply(undefined /* thisArg */, ['A', 'B', 'C'])
@@ -245,11 +246,19 @@ abc.call(undefined /* thisArg */, 'A', 'B', 'C')
 ###7. Function.prototype.bind
 
 The `bind` method creates a new function that, when called, has its this keyword set to the provided value, with a given sequence of arguments preceding any provided when the new function is called.
-```
+
+```javascript
 function abc(a, b, c) { ... } // define a function
 
 var abcBind = abc.bind(undefined /* thisArg */, 'A', 'B', 'C');
 abcBind(); // keeps values from bind for execution
+```
+
+`bind` is really powerful and you can create a pretty neat tricks with it, like:
+
+```javascript
+var $ = document.querySelector.bind(document);
+$('.selector');
 ```
 
 
@@ -257,7 +266,7 @@ abcBind(); // keeps values from bind for execution
 
 A closure is an inner function that has access to the outer (enclosing) function's variables—scope chain. The closure has three scope chains: it has access to its own scope (variables defined between its curly brackets), it has access to the outer function's variables, and it has access to the global variables. **Simply accessing variables outside of your immediate lexical scope creates a closure.**
 
-```
+```javascript
 function sayHello(name) {
     var hello = 'Hello '; // local variable
     var sayAlert = function() {
@@ -277,12 +286,93 @@ say();
 
 Within its current scope, regardless of where a variable is declared, it will be, behind the scenes, hoisted to the top. However, only the declaration will be hoisted. If the variable is also initialized, the current value, at the top of the scope, will initially be set to undefined.
 
-```
+```javascript
 function () {
     alert(myvar); // myvar is declared but undefined
     var myvar = 'local value';
 }
 ```
+
+Another interesting trick with the way how hoisting works:
+
+```javascript
+var func = function() { console.log('1'); };
+function func() { console.log('2'); }
+func(); // '1'
+```
+
+The reason why the console logs `1` is how the above code gets interpreted by JavaScript engine like this:
+```javascript
+var func;
+function func() { console.log('2'); }
+func = function() { console.log('1'); };
+func(); // '1'
+```
+
+
+###10. Execution and event threads
+
+There is only **one** JavaScript thread per window. Other activities like rendering, downloading etc may be managed by separate threads, with different priorities.
+
+*Note*: There is a `Web Workers` standard (incomplete at the time of writing) which defines the support for multiple JavaScript workers. A worker is an independent JavaScript subprocess. Web workers are limited. They are able to execute JavaScript and exchange messages with the parent process, but they can’t access DOM.
+
+```javascript
+for (var i = 0; i < 3; i++) {
+  setTimeout(function() { console.log(i); }, 0);
+}
+// 3, 3, 3
+
+for (var i = 0; i < 3; i++) {
+  setTimeout((function(i) { return function() { console.log(i); } })(i), 0);
+}
+// closure helps: 0, 1, 2
+
+[0, 1, 2].forEach(function (v) {
+  setTimeout(function() { console.log(v); }, 0);
+});
+// same here: 0, 1, 2
+```
+
+JavaScript has a concurrency model based on an **event loop**. This model is quite different than the model in other languages like C or Java.
+
+The `call stack` is basically ‑ it's a data structure which records basically where in the program we are, if we step into a function, we put something on to the stack, if we return from a function, we pop off the top of the stack that's all the stack can do.
+
+Visualization of the `call stack`:
+
+```javascript
+function add(x, y) {
+    // stack --> [add(x, y), double(8), main()]
+    return x + y;
+    // (after we leave the scope of a function) stack --> [double(8), main()]
+}
+function double(z) {
+    // stack --> [double(8), main()]
+    return add(z, z);
+    // (after we leave the scope of a function) stack --> [main()]
+}
+double(8);
+// stack --> [main()]
+```
+
+The full picture of the `call stack` and browser's webAPIs:
+
+```
+ ----------    ------------
+| stack[1] |  | webAPIs[2] |
+|          |  |            |
+|          |  |            |
+ ----------    ------------
+
+[event loop[4]]
+
+ ---------------
+| task queue[3] |
+ ---------------
+```
+
+Async task, like for example `setTimeout`, first goes to the `call stack`, then it gets thrown in to `webAPIs` and it sits there for a period of timeout. Once timeout is ready to go the callback of that timeout gets moved to the `task queue`. Finally, `event loop` waits for the `call stack` to be clear and collects tasks from the `task queue` and places them in to the `stack`.
+
+The popular trick with `setTimeout(cb, 0)` means that it gets pushed to `task queue` immediately and it gets deferred until the `call stack` is clear and all tasks are done.
 
 
 ###10. defer vs async
@@ -294,7 +384,8 @@ If you use both *defer* and *async* then async overrides defer in browsers that 
 
 
 ###11. Module pattern
-```
+
+```javascript
 (function selfExecutedModule(app, window, $, undefined) {
     // ...
     // module logic goes here
@@ -460,7 +551,7 @@ Each of these rendering engines handles the rendering of web pages differently, 
 
 Start at 0, add 1000 for style attribute, add 100 for each ID, add 10 for each attribute, class or pseudo-class, add 1 for each element name or pseudo-element. So in
 
-```
+```css
 body #content .data img:hover
 ```
 
