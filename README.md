@@ -301,7 +301,7 @@ function func() { console.log('2'); }
 func(); // '1'
 ```
 
-The reason why the console logs `1` is how the above code gets interpreted by JavaScript engine like this:
+The reason why the console logs `1` is how the above code gets interpreted by JavaScript engine:
 ```javascript
 var func;
 function func() { console.log('2'); }
